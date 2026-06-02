@@ -1,0 +1,27 @@
+.toggle {
+  display: inline-flex;
+  border: 1px solid var(--line-2);
+}
+
+.option {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: var(--ink-2);
+  background: transparent;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  border: none;
+}
+
+.option:first-child {
+  border-right: 1px solid var(--line-2);
+}
+
+.optionActive {
+  background: var(--accent);
+  color: var(--bg);
+}

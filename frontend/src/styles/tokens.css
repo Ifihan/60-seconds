@@ -1,0 +1,54 @@
+/* Design tokens — dark theme (default) */
+:root {
+  --bg: #0c0b0a;
+  --surface: #151412;
+  --surface-2: #1d1b18;
+  --line: #29261f;
+  --line-2: #3a362d;
+  --ink: #f1ede6;
+  --ink-2: #9d978b;
+  --ink-3: #615c52;
+  --accent: #d4a5e8;
+
+  /* Font stacks — --font-archivo and --font-ibm-plex-mono are injected
+     by Next.js font classes applied to <body> */
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "Archivo", system-ui, sans-serif;
+
+  /* Timer: 96px, tabular */
+  --text-timer: 500 96px / 1 var(--font-mono);
+  /* Display: Archivo 800, fluid 40–92px */
+  --text-display-size: clamp(40px, 8vw, 92px);
+  /* Heading 1 */
+  --text-h1-size: clamp(26px, 3vw, 34px);
+  /* Heading 2 */
+  --text-h2-size: clamp(16px, 2vw, 20px);
+  /* Body */
+  --text-body-size: 15px;
+  --text-body-line: 1.45;
+  /* Label: mono 12px, +14% caps */
+  --text-label-size: 12px;
+  --text-label-spacing: 0.14em;
+  /* Eyebrow: mono 11px, +22% caps */
+  --text-eyebrow-size: 11px;
+  --text-eyebrow-spacing: 0.22em;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  --transition-fast: 120ms ease;
+  --transition-mid: 250ms ease;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg: #f4f1ea;
+  --surface: #fbf9f4;
+  --surface-2: #eae5da;
+  --line: #dcd6c8;
+  --line-2: #c6bfae;
+  --ink: #17150f;
+  --ink-2: #6b665b;
+  --ink-3: #9d968a;
+  --accent: #a855d4;
+}

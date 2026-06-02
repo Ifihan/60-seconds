@@ -1,0 +1,74 @@
+@import "../styles/tokens.css";
+@import "../styles/reset.css";
+
+/*
+  Next.js font classes set --font-archivo and --font-ibm-plex-mono on <body>.
+  Override --font-sans and --font-mono here so all descendants pick up the
+  actual loaded font, not the generic name fallback.
+*/
+body {
+  --font-sans: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+/* Typography utilities */
+.display {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: var(--text-display-size);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.h1 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-h1-size);
+  line-height: 1.1;
+}
+
+.h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-h2-size);
+  line-height: 1.2;
+}
+
+.timer {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 96px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-label-size);
+  letter-spacing: var(--text-label-spacing);
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-eyebrow-size);
+  letter-spacing: var(--text-eyebrow-spacing);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Layout */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  min-height: 100dvh;
+}
+
+@media (max-width: 768px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}

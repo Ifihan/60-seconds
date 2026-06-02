@@ -42,8 +42,6 @@ class Settings(BaseSettings):
     def validate_production_settings(self) -> "Settings":
         if self.environment != "production":
             return self
-        if not self.rate_limit_storage_uri:
-            raise ValueError("RATE_LIMIT_STORAGE_URI is required in production")
         if "*" in self.allowed_hosts_list:
             raise ValueError("Wildcard ALLOWED_HOSTS is not allowed in production")
         return self

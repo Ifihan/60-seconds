@@ -68,6 +68,7 @@ export default function Nav() {
       </Link>
 
       <div className={styles.right}>
+        <Link href="/about" className={styles.aboutLink}>About</Link>
         <button
           type="button"
           className={styles.themeBtn}

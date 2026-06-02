@@ -145,6 +145,18 @@
 
 .menuItem:hover { color: var(--ink); }
 
+.aboutLink {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.aboutLink:hover { color: var(--ink); }
+
 .signInLink {
   font-family: var(--font-mono);
   font-size: 11px;

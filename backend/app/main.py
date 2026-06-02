@@ -10,7 +10,7 @@ from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.exceptions import AppException, app_exception_handler
 from app.limiter import limiter
-from app.routers import auth, areas, topics, sessions
+from app.routers import auth, areas, topics, sessions, push
 
 
 @asynccontextmanager
@@ -58,3 +58,4 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(areas.router, prefix="/areas", tags=["areas"])
 app.include_router(topics.router, prefix="/areas", tags=["topics"])
 app.include_router(sessions.router, prefix="/sessions", tags=["sessions"])
+app.include_router(push.router, prefix="/push", tags=["push"])

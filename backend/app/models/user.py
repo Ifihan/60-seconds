@@ -18,3 +18,4 @@ class User(Base):
     subscribed_areas: Mapped[list["UserArea"]] = relationship("UserArea", back_populates="user", cascade="all, delete-orphan")
     created_areas: Mapped[list["Area"]] = relationship("Area", back_populates="user", cascade="all, delete-orphan", foreign_keys="Area.user_id")
     sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user", cascade="all, delete-orphan")
+    push_subscriptions: Mapped[list["PushSubscription"]] = relationship("PushSubscription", back_populates="user", cascade="all, delete-orphan")

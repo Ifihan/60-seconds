@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     allowed_hosts: str = "localhost,127.0.0.1"
     cors_allowed_origins: str = ""
     rate_limit_storage_uri: str | None = None
+    vapid_private_key: str | None = None
+    vapid_public_key: str | None = None
+    vapid_claims_email: str = "admin@60seconds.dev"
+    notify_secret: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env")
 

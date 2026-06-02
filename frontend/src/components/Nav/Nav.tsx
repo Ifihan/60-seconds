@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useStore } from "@/store";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import styles from "./Nav.module.css";
 
 function ClockIcon() {
@@ -40,6 +41,7 @@ function MoonIcon() {
 
 export default function Nav() {
   const { user, logout, theme, toggleTheme } = useStore();
+  const { supported, subscribed, loading, subscribe, unsubscribe } = usePushNotifications();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -100,6 +102,17 @@ export default function Nav() {
                 >
                   View history
                 </Link>
+                {supported && (
+                  <button
+                    type="button"
+                    className={styles.menuItem}
+                    role="menuitem"
+                    disabled={loading}
+                    onClick={() => subscribed ? unsubscribe() : subscribe()}
+                  >
+                    {loading ? "…" : subscribed ? "Disable reminders" : "Enable reminders"}
+                  </button>
+                )}
                 <button
                   type="button"
                   className={styles.menuItem}

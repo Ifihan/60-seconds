@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import StoreHydration from "@/components/StoreHydration/StoreHydration";
+import ServiceWorker from "@/components/ServiceWorker/ServiceWorker";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -34,6 +35,7 @@ export default function RootLayout({
       </head>
       <body className={`${archivo.variable} ${ibmPlexMono.variable}`}>
         <StoreHydration />
+        <ServiceWorker />
         {children}
       </body>
     </html>

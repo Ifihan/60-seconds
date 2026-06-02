@@ -1,0 +1,60 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.env
+*.env
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.mo
+*.pot
+
+# ── Flutter / Dart ─────────────────────────────────────────────────────────────
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+build/
+*.iml
+.pub-cache/
+.pub/
+doc/api/
+*.log
+
+# ── Node / Next.js ────────────────────────────────────────────────────────────
+node_modules/
+.next/
+.env.local
+.env.*.local
+*.tsbuildinfo
+
+# ── SQLite (local test db) ─────────────────────────────────────────────────────
+test.db
+
+# ── App folder ────────────────────────────────────────────────────────────────
+app/
+
+# ── IDE & OS ───────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

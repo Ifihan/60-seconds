@@ -15,6 +15,9 @@ export const subscribeArea = (areaId: string) =>
 export const unsubscribeArea = (areaId: string) =>
   api.delete(`/areas/${areaId}/subscribe`);
 
+export const setPreferredArea = (areaId: string) =>
+  api.post<Area>(`/areas/${areaId}/preferred`);
+
 export const getTopics = (areaId: string) =>
   api.get<Topic[]>(`/areas/${areaId}/topics`);
 

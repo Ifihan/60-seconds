@@ -13,7 +13,15 @@ export interface Area {
   topic_count: number;
   is_subscribed: boolean;
   is_own: boolean;
+  is_preferred: boolean;
   created_at: string;
+}
+
+export interface GuestDailyTopic {
+  date: string;
+  areaId: string;
+  areaName: string;
+  topicName: string;
 }
 
 export interface Topic {
@@ -41,6 +49,10 @@ interface Store {
   // Theme
   theme: "dark" | "light";
 
+  // Guest "topic of the day" (device-local only)
+  guestPreferredAreaId: string | null;
+  guestDailyTopic: GuestDailyTopic | null;
+
   // Actions
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
@@ -53,6 +65,9 @@ interface Store {
   resetSession: () => void;
 
   toggleTheme: () => void;
+
+  setGuestPreferredArea: (areaId: string | null) => void;
+  setGuestDailyTopic: (entry: GuestDailyTopic | null) => void;
 
   // Hydration tracking (not persisted)
   _hydrated: boolean;
@@ -80,6 +95,9 @@ export const useStore = create<Store>()(
       prepNotes: "",
 
       theme: "light",
+
+      guestPreferredAreaId: null,
+      guestDailyTopic: null,
 
       setUser: (user) => set({ user }),
       setToken: (token) => set({ token }),
@@ -109,6 +127,10 @@ export const useStore = create<Store>()(
       toggleTheme: () =>
         set((s) => ({ theme: s.theme === "dark" ? "light" : "dark" })),
 
+      setGuestPreferredArea: (areaId) =>
+        set({ guestPreferredAreaId: areaId, guestDailyTopic: null }),
+      setGuestDailyTopic: (entry) => set({ guestDailyTopic: entry }),
+
       _hydrated: false,
       setHydrated: () => set({ _hydrated: true }),
     }),
@@ -123,6 +145,8 @@ export const useStore = create<Store>()(
         currentTopic: s.currentTopic,
         selectedArea: s.selectedArea,
         prepTimeRemaining: s.prepTimeRemaining,
+        guestPreferredAreaId: s.guestPreferredAreaId,
+        guestDailyTopic: s.guestDailyTopic,
       }),
     }
   )

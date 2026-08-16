@@ -61,8 +61,25 @@ export default function SpinPage() {
 
       const padCount = 18;
       const reel: string[] = [];
+      let prev = "";
       for (let i = 0; i < padCount; i++) {
-        reel.push(topicList[Math.floor(Math.random() * topicList.length)].name);
+        let next = topicList[Math.floor(Math.random() * topicList.length)].name;
+        if (topicList.length > 1) {
+          while (next === prev) {
+            next = topicList[Math.floor(Math.random() * topicList.length)].name;
+          }
+        }
+        reel.push(next);
+        prev = next;
+      }
+      // Ensure the item right before the winner isn't the winner itself,
+      // so the reel doesn't appear to "hover" on the answer before landing.
+      if (reel[reel.length - 1] === picked && topicList.length > 1) {
+        let filler = topicList[Math.floor(Math.random() * topicList.length)].name;
+        while (filler === picked) {
+          filler = topicList[Math.floor(Math.random() * topicList.length)].name;
+        }
+        reel[reel.length - 1] = filler;
       }
       reel.push(picked);
 

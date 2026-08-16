@@ -5,19 +5,20 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav/Nav";
 import { useStore, type Area } from "@/store";
-import { getAreas, subscribeArea, unsubscribeArea } from "@/api/areas";
+import { getAreas, subscribeArea, unsubscribeArea, setPreferredArea } from "@/api/areas";
 import styles from "./page.module.css";
 
 type Filter = "ALL" | "SUBSCRIBED" | "OWN";
 
 export default function AreasPage() {
   const router = useRouter();
-  const { token } = useStore();
+  const { token, guestPreferredAreaId, setGuestPreferredArea } = useStore();
   const [areas, setAreas] = useState<Area[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [filter, setFilter] = useState<Filter>("ALL");
   const [pending, setPending] = useState<Set<string>>(new Set());
+  const [preferredPending, setPreferredPending] = useState<Set<string>>(new Set());
 
   // Guests can browse global areas — no auth redirect here
 
@@ -55,6 +56,27 @@ export default function AreasPage() {
       // ignore
     } finally {
       setPending((p) => {
+        const next = new Set(p);
+        next.delete(area.id);
+        return next;
+      });
+    }
+  }
+
+  async function makePreferred(area: Area) {
+    if (preferredPending.has(area.id)) return;
+    if (!token) {
+      setGuestPreferredArea(area.id);
+      return;
+    }
+    setPreferredPending((p) => new Set(p).add(area.id));
+    try {
+      await setPreferredArea(area.id);
+      setAreas((prev) => prev.map((a) => ({ ...a, is_preferred: a.id === area.id })));
+    } catch {
+      // ignore
+    } finally {
+      setPreferredPending((p) => {
         const next = new Set(p);
         next.delete(area.id);
         return next;
@@ -146,6 +168,9 @@ export default function AreasPage() {
               busy={pending.has(area.id)}
               onToggle={() => toggleSubscribe(area)}
               isGuest={!token}
+              isPreferred={token ? area.is_preferred : area.id === guestPreferredAreaId}
+              preferredBusy={preferredPending.has(area.id)}
+              onMakePreferred={() => makePreferred(area)}
             />
           ))}
 
@@ -154,7 +179,16 @@ export default function AreasPage() {
             <div className={styles.section}>
               <p className={styles.sectionLabel}>My areas</p>
               {ownAreas.map((area) => (
-                <AreaCard key={area.id} area={area} busy={false} onToggle={() => {}} isGuest={false} />
+                <AreaCard
+                  key={area.id}
+                  area={area}
+                  busy={false}
+                  onToggle={() => {}}
+                  isGuest={false}
+                  isPreferred={area.is_preferred}
+                  preferredBusy={preferredPending.has(area.id)}
+                  onMakePreferred={() => makePreferred(area)}
+                />
               ))}
             </div>
           )}
@@ -169,12 +203,30 @@ function AreaCard({
   busy,
   onToggle,
   isGuest,
+  isPreferred,
+  preferredBusy,
+  onMakePreferred,
 }: {
   area: Area;
   busy: boolean;
   onToggle: () => void;
   isGuest: boolean;
+  isPreferred: boolean;
+  preferredBusy: boolean;
+  onMakePreferred: () => void;
 }) {
+  const dailyBtn = (
+    <button
+      type="button"
+      className={`${styles.subBtn} ${isPreferred ? styles.subBtnActive : ""}`}
+      onClick={onMakePreferred}
+      disabled={preferredBusy || isPreferred}
+      aria-pressed={isPreferred}
+    >
+      {preferredBusy ? "…" : isPreferred ? "★ Daily" : "☆ Daily"}
+    </button>
+  );
+
   return (
     <div className={styles.areaCard}>
       <span className={styles.areaName}>{area.name}</span>
@@ -182,10 +234,14 @@ function AreaCard({
       {area.is_own ? (
         <>
           <span className={styles.ownBadge}>Mine</span>
+          {dailyBtn}
           <Link href={`/spin/${area.id}`} className={styles.spinLink}>↺ Spin</Link>
         </>
       ) : isGuest ? (
-        <Link href={`/spin/${area.id}`} className={styles.spinLink}>↺ Spin</Link>
+        <>
+          {dailyBtn}
+          <Link href={`/spin/${area.id}`} className={styles.spinLink}>↺ Spin</Link>
+        </>
       ) : (
         <>
           <button
@@ -197,6 +253,7 @@ function AreaCard({
           >
             {busy ? "…" : area.is_subscribed ? "Subscribed" : "+ Add"}
           </button>
+          {dailyBtn}
           <Link href={`/spin/${area.id}`} className={styles.spinLink}>↺ Spin</Link>
         </>
       )}

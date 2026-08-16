@@ -6,6 +6,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav/Nav";
 import Button from "@/components/Button/Button";
 import AreaRow from "@/components/AreaRow/AreaRow";
+import DailyTopicCard from "@/components/DailyTopicCard/DailyTopicCard";
 import { useStore, type Area } from "@/store";
 import { getAreas } from "@/api/areas";
 import styles from "./page.module.css";
@@ -52,6 +53,7 @@ export default function Home() {
       <main className={styles.page}>
         {/* Left hero */}
         <section className={styles.hero}>
+          {!loading && !error && <DailyTopicCard areas={areas} />}
           <h1 className={styles.heroTitle}>
             Spin a<br />topic.
           </h1>

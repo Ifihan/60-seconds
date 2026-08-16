@@ -4,5 +4,6 @@ from app.models.user_area import UserArea
 from app.models.topic import Topic
 from app.models.session import Session, RecordMode
 from app.models.push_subscription import PushSubscription
+from app.models.daily_topic import DailyTopic
 
-__all__ = ["User", "Area", "UserArea", "Topic", "Session", "RecordMode", "PushSubscription"]
+__all__ = ["User", "Area", "UserArea", "Topic", "Session", "RecordMode", "PushSubscription", "DailyTopic"]

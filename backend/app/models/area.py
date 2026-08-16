@@ -16,7 +16,9 @@ class Area(Base):
     user_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
-    user: Mapped["User | None"] = relationship("User", back_populates="created_areas")
+    user: Mapped["User | None"] = relationship(
+        "User", back_populates="created_areas", foreign_keys=[user_id]
+    )
     topics: Mapped[list["Topic"]] = relationship("Topic", back_populates="area", cascade="all, delete-orphan")
     subscribers: Mapped[list["UserArea"]] = relationship("UserArea", back_populates="area", cascade="all, delete-orphan")
     sessions: Mapped[list["Session"]] = relationship(

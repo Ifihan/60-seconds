@@ -159,6 +159,31 @@
   color: var(--ink-3);
 }
 
+.tdFeedback {
+  text-align: right;
+}
+
+.feedbackToggle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.feedbackToggle:hover {
+  opacity: 0.75;
+}
+
+.feedbackRow {
+  padding: 16px 0 24px;
+}
+
 /* Pagination */
 .pagination {
   display: flex;

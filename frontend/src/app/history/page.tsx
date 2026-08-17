@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Nav from "@/components/Nav/Nav";
 import { useStore } from "@/store";
 import { getAreas } from "@/api/areas";
 import { getSessions, type Session } from "@/api/sessions";
+import SpeechFeedback from "@/components/SpeechFeedback/SpeechFeedback";
 import type { Area } from "@/store";
 import styles from "./page.module.css";
 
@@ -21,6 +22,7 @@ export default function HistoryPage() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!_hydrated) return;
@@ -112,24 +114,47 @@ export default function HistoryPage() {
                   <th className={styles.th}>Area</th>
                   <th className={styles.th}>Date</th>
                   <th className={styles.th}>Format</th>
+                  <th className={styles.th}>Feedback</th>
                 </tr>
               </thead>
               <tbody>
                 {sessions.map((s) => (
-                  <tr key={s.id} className={styles.tr}>
-                    <td className={`${styles.td} ${styles.tdTopic}`}>{s.topic}</td>
-                    <td className={`${styles.td} ${styles.tdArea}`}>{s.area_name}</td>
-                    <td className={`${styles.td} ${styles.tdDate}`}>
-                      {new Date(s.completed_at).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td className={`${styles.td} ${styles.tdMode}`}>
-                      {s.mode === "VIDEO" ? "Video" : "Audio"}
-                    </td>
-                  </tr>
+                  <Fragment key={s.id}>
+                    <tr className={styles.tr}>
+                      <td className={`${styles.td} ${styles.tdTopic}`}>{s.topic}</td>
+                      <td className={`${styles.td} ${styles.tdArea}`}>{s.area_name}</td>
+                      <td className={`${styles.td} ${styles.tdDate}`}>
+                        {new Date(s.completed_at).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className={`${styles.td} ${styles.tdMode}`}>
+                        {s.mode === "VIDEO" ? "Video" : "Audio"}
+                      </td>
+                      <td className={`${styles.td} ${styles.tdFeedback}`}>
+                        {s.transcript ? (
+                          <button
+                            type="button"
+                            className={styles.feedbackToggle}
+                            onClick={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                          >
+                            {expandedId === s.id ? "Hide" : "View"}
+                          </button>
+                        ) : (
+                          <span className={styles.tdMode}>—</span>
+                        )}
+                      </td>
+                    </tr>
+                    {expandedId === s.id && (
+                      <tr>
+                        <td colSpan={5} className={styles.feedbackRow}>
+                          <SpeechFeedback session={s} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 ))}
               </tbody>
             </table>

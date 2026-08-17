@@ -4,9 +4,14 @@ import { useRef, useState, useCallback } from "react";
 
 export type RecordMode = "AUDIO" | "VIDEO";
 
+export interface RecordingResult {
+  blob: Blob;
+  audioBlob: Blob;
+}
+
 interface UseMediaRecorderOptions {
   mode: RecordMode;
-  onStop?: (blob: Blob) => void;
+  onStop?: (result: RecordingResult) => void;
 }
 
 export function useMediaRecorder({ mode, onStop }: UseMediaRecorderOptions) {
@@ -15,6 +20,11 @@ export function useMediaRecorder({ mode, onStop }: UseMediaRecorderOptions) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // VIDEO mode also runs a second, audio-only recorder off the same stream so
+  // we can upload just the audio for analysis without sending the full video.
+  const audioRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const start = useCallback(async () => {
     setError(null);
@@ -31,21 +41,46 @@ export function useMediaRecorder({ mode, onStop }: UseMediaRecorderOptions) {
       mediaRecorderRef.current = mr;
       chunksRef.current = [];
 
+      let audioMr: MediaRecorder | null = null;
+      if (mode === "VIDEO") {
+        const audioOnlyStream = new MediaStream(stream.getAudioTracks());
+        audioMr = new MediaRecorder(audioOnlyStream);
+        audioRecorderRef.current = audioMr;
+        audioChunksRef.current = [];
+        audioMr.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunksRef.current.push(e.data);
+        };
+      }
+
       mr.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
 
-      mr.onstop = () => {
+      let stoppedCount = 0;
+      const expectedStops = mode === "VIDEO" ? 2 : 1;
+      const finish = () => {
+        stoppedCount += 1;
+        if (stoppedCount < expectedStops) return;
+
         const blob = new Blob(chunksRef.current, {
           type: mode === "VIDEO" ? "video/webm" : "audio/webm",
         });
-        onStop?.(blob);
+        const audioBlob =
+          mode === "VIDEO"
+            ? new Blob(audioChunksRef.current, { type: "audio/webm" })
+            : blob;
+
+        onStop?.({ blob, audioBlob });
         stream.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
         setRecording(false);
       };
 
+      mr.onstop = finish;
+      if (audioMr) audioMr.onstop = finish;
+
       mr.start();
+      audioMr?.start();
       setRecording(true);
     } catch (err) {
       setError(
@@ -56,6 +91,7 @@ export function useMediaRecorder({ mode, onStop }: UseMediaRecorderOptions) {
 
   const stop = useCallback(() => {
     mediaRecorderRef.current?.stop();
+    audioRecorderRef.current?.stop();
   }, []);
 
   const getStream = () => streamRef.current;

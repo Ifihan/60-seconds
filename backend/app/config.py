@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     vapid_public_key: str | None = None
     vapid_claims_email: str = "admin@60seconds.dev"
     notify_secret: str | None = None
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-3.6-flash"
 
     model_config = SettingsConfigDict(env_file=".env")
 

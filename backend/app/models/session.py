@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String
+from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -24,6 +24,15 @@ class Session(Base):
     mode: Mapped[RecordMode] = mapped_column(Enum(RecordMode))
     completed_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    transcript: Mapped[str | None] = mapped_column(Text, nullable=True)
+    filler_word_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    words_per_minute: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    coherence_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    grammar_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    content_accuracy_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    feedback_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    analyzed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     user: Mapped["User"] = relationship("User", back_populates="sessions")
     area: Mapped["Area"] = relationship(

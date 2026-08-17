@@ -31,6 +31,14 @@ class SessionOut(BaseModel):
     area_name: str
     mode: RecordMode
     completed_at: datetime
+    transcript: str | None = None
+    filler_word_count: int | None = None
+    words_per_minute: int | None = None
+    coherence_score: int | None = None
+    grammar_score: int | None = None
+    content_accuracy_score: int | None = None
+    feedback_summary: str | None = None
+    analyzed_at: datetime | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

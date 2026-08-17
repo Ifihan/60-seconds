@@ -29,6 +29,16 @@ class ForbiddenError(AppException):
         super().__init__(403, "FORBIDDEN", message)
 
 
+class ValidationError(AppException):
+    def __init__(self, message: str = "Invalid request"):
+        super().__init__(422, "VALIDATION_ERROR", message)
+
+
+class UpstreamError(AppException):
+    def __init__(self, message: str = "Upstream service unavailable"):
+        super().__init__(502, "UPSTREAM_ERROR", message)
+
+
 async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,

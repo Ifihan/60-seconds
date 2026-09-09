@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - saver_gallery (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - saver_gallery (from `.symlinks/plugins/saver_gallery/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  saver_gallery:
+    :path: ".symlinks/plugins/saver_gallery/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  saver_gallery: af2d0c762dafda254e0ad025ef0dabd6506cd490
+
+PODFILE CHECKSUM: 03176796b12e6c5f3065381861fddb16d6540ea9
+
+COCOAPODS: 1.17.0

@@ -102,7 +102,7 @@ async def analyze_session(
     if len(audio_bytes) > MAX_ANALYZE_UPLOAD_BYTES:
         raise ValidationError("Audio file is too large")
 
-    analysis = await analyze_speech(audio_bytes, session.topic)
+    analysis = await analyze_speech(audio_bytes, session.topic, audio.filename)
 
     session.transcript = analysis.transcript
     session.filler_word_count = analysis.filler_word_count

@@ -160,7 +160,7 @@ _FAKE_ANALYSIS = SpeechAnalysis(
 
 @pytest.mark.asyncio
 async def test_analyze_session_success(client: AsyncClient, monkeypatch):
-    async def fake_analyze_speech(audio_bytes, topic):
+    async def fake_analyze_speech(audio_bytes, topic, filename=None):
         return _FAKE_ANALYSIS
 
     monkeypatch.setattr("app.routers.sessions.analyze_speech", fake_analyze_speech)
@@ -188,7 +188,7 @@ async def test_analyze_session_success(client: AsyncClient, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_analyze_session_not_owned(client: AsyncClient, monkeypatch):
-    async def fake_analyze_speech(audio_bytes, topic):
+    async def fake_analyze_speech(audio_bytes, topic, filename=None):
         return _FAKE_ANALYSIS
 
     monkeypatch.setattr("app.routers.sessions.analyze_speech", fake_analyze_speech)
@@ -210,7 +210,7 @@ async def test_analyze_session_not_owned(client: AsyncClient, monkeypatch):
 async def test_analyze_session_oversized_upload_rejected(client: AsyncClient, monkeypatch):
     called = False
 
-    async def fake_analyze_speech(audio_bytes, topic):
+    async def fake_analyze_speech(audio_bytes, topic, filename=None):
         nonlocal called
         called = True
         return _FAKE_ANALYSIS
@@ -233,7 +233,7 @@ async def test_analyze_session_oversized_upload_rejected(client: AsyncClient, mo
 
 @pytest.mark.asyncio
 async def test_analyze_session_upstream_failure(client: AsyncClient, monkeypatch):
-    async def failing_analyze_speech(audio_bytes, topic):
+    async def failing_analyze_speech(audio_bytes, topic, filename=None):
         raise UpstreamError("Speech analysis failed")
 
     monkeypatch.setattr("app.routers.sessions.analyze_speech", failing_analyze_speech)

@@ -11,7 +11,6 @@ from app.limiter import limiter
 from app.models.area import Area
 from app.models.session import Session
 from app.models.user import User
-from app.models.user_area import UserArea
 from app.schemas.session import PaginatedSessions, PaginationMeta, SessionCreate, SessionOut
 from app.services.gemini import analyze_speech
 
@@ -31,15 +30,12 @@ async def create_session(
     if not area:
         raise NotFoundError("Area not found")
 
-    if area.user_id != current_user.id:
-        if area.user_id is None:
-            sub_result = await db.execute(
-                select(UserArea).where(UserArea.user_id == current_user.id, UserArea.area_id == body.area_id)
-            )
-            if not sub_result.scalar_one_or_none():
-                raise ForbiddenError("Not subscribed to this area")
-        else:
-            raise ForbiddenError("Area does not belong to current user")
+    # Any global (catalog) area or your own area can be practiced on — matches
+    # topic access (GET /areas/{id}/topics is unrestricted) and preferred-area
+    # selection, neither of which require a subscription either. Subscription
+    # only controls what shows on your personalized home sidebar.
+    if area.user_id is not None and area.user_id != current_user.id:
+        raise ForbiddenError("Area does not belong to current user")
 
     session = Session(
         user_id=current_user.id,

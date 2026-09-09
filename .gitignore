@@ -56,3 +56,6 @@ test.db
 *.swo
 .DS_Store
 Thumbs.db
+
+# ── GCP service account keys (never commit live credentials) ───────────────────
+*-key.json

@@ -2,8 +2,10 @@ from datetime import datetime, timezone
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions import UpstreamError
+from app.models.area import Area
 from app.services.gemini import SpeechAnalysis
 
 
@@ -37,6 +39,29 @@ async def test_create_session_success(client: AsyncClient):
     data = resp.json()
     assert data["area_id"] == area_id
     assert data["topic"] == "How indexing works"
+
+
+@pytest.mark.asyncio
+async def test_create_session_global_area_without_subscription(client: AsyncClient, db: AsyncSession):
+    headers = await _auth_headers(client, "sess_unsubscribed@test.com")
+
+    global_area = Area(name="Global Area", user_id=None)
+    db.add(global_area)
+    await db.commit()
+    await db.refresh(global_area)
+
+    resp = await client.post(
+        "/sessions",
+        json={
+            "area_id": global_area.id,
+            "topic": "Practiced without subscribing",
+            "mode": "AUDIO",
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+        },
+        headers=headers,
+    )
+    assert resp.status_code == 201
+    assert resp.json()["area_id"] == global_area.id
 
 
 @pytest.mark.asyncio

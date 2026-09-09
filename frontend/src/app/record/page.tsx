@@ -31,6 +31,7 @@ export default function RecordPage() {
   const [done, setDone] = useState(false);
   const [timerStarted, setTimerStarted] = useState(false);
   const [didRecord, setDidRecord] = useState(false);
+  const [starting, setStarting] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -39,6 +40,7 @@ export default function RecordPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
   const [analyzedSession, setAnalyzedSession] = useState<Session | null>(null);
+  const [skippedAnalyze, setSkippedAnalyze] = useState(false);
 
   // Guest-mode timer (no MediaRecorder)
   const [guestStarted, setGuestStarted] = useState(false);
@@ -157,13 +159,18 @@ export default function RecordPage() {
     setDone(true);
   }, [remaining, token, done, timerStarted]);
 
-  async function handleRecordClick() {
-    if (recording) {
-      stop();
-    } else {
-      await start();
+  async function handleStart() {
+    setStarting(true);
+    const ok = await start();
+    setStarting(false);
+    if (ok) {
       setDidRecord(true);
+      setTimerStarted(true);
     }
+  }
+
+  function handleStopRecording() {
+    if (recording) stop();
   }
 
   function handleGoHome() {
@@ -186,6 +193,7 @@ export default function RecordPage() {
     setAnalyzing(false);
     setAnalyzeError(null);
     setAnalyzedSession(null);
+    setSkippedAnalyze(false);
   }
 
   async function handleAnalyze() {
@@ -292,7 +300,7 @@ export default function RecordPage() {
                 {didRecord ? `${mode === "AUDIO" ? "Audio" : "Video"} · ` : ""}{new Date().toLocaleDateString()}
               </span>
             </div>
-            {didRecord && audioBlob && sessionId && !analyzedSession && (
+            {didRecord && audioBlob && sessionId && !analyzedSession && !skippedAnalyze ? (
               <div className={styles.analyzeWrap}>
                 <Button variant="primary" onClick={handleAnalyze} disabled={analyzing}>
                   {analyzing ? (
@@ -310,20 +318,31 @@ export default function RecordPage() {
                 {analyzeError && (
                   <p className={styles.error}>{analyzeError}</p>
                 )}
+                {!analyzing && (
+                  <button
+                    type="button"
+                    className={styles.skipLink}
+                    onClick={() => setSkippedAnalyze(true)}
+                  >
+                    Skip →
+                  </button>
+                )}
               </div>
+            ) : (
+              <>
+                {analyzedSession && <SpeechFeedback session={analyzedSession} />}
+
+                <Button variant="primary" onClick={handleStartAgain}>
+                  Start again →
+                </Button>
+                <Button variant="ghost" onClick={handleGoHome}>
+                  Go Home
+                </Button>
+                <Link href="/history">
+                  <Button variant="ghost">View History</Button>
+                </Link>
+              </>
             )}
-
-            {analyzedSession && <SpeechFeedback session={analyzedSession} />}
-
-            <Button variant="primary" onClick={handleStartAgain}>
-              Start again →
-            </Button>
-            <Button variant="ghost" onClick={handleGoHome}>
-              Go Home
-            </Button>
-            <Link href="/history">
-              <Button variant="ghost">View History</Button>
-            </Link>
           </div>
         </main>
       </>
@@ -345,7 +364,8 @@ export default function RecordPage() {
 
         {!timerStarted && (
           <p className={styles.analyzeHint}>
-            Tap record once the timer starts if you want AI feedback afterward.
+            Starting will ask for {mode === "AUDIO" ? "microphone" : "camera and microphone"} access,
+            then begin recording and the timer together.
           </p>
         )}
 
@@ -372,14 +392,21 @@ export default function RecordPage() {
 
         <div className={styles.controls}>
           {!timerStarted ? (
-            <Button variant="primary" onClick={() => setTimerStarted(true)}>
-              Start timer →
+            <Button variant="primary" onClick={handleStart} disabled={starting}>
+              {starting ? (
+                <>
+                  <span className={styles.spinner} aria-hidden="true" />
+                  Requesting access…
+                </>
+              ) : (
+                "Start →"
+              )}
             </Button>
           ) : (
             <RecordButton
               recording={recording}
-              disabled={done}
-              onClick={handleRecordClick}
+              disabled={done || !recording}
+              onClick={handleStopRecording}
             />
           )}
         </div>

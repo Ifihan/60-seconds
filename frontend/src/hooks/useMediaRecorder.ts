@@ -26,7 +26,7 @@ export function useMediaRecorder({ mode, onStop }: UseMediaRecorderOptions) {
   const audioRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (): Promise<boolean> => {
     setError(null);
     try {
       const constraints =
@@ -82,10 +82,12 @@ export function useMediaRecorder({ mode, onStop }: UseMediaRecorderOptions) {
       mr.start();
       audioMr?.start();
       setRecording(true);
+      return true;
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Could not access microphone"
       );
+      return false;
     }
   }, [mode, onStop]);
 
